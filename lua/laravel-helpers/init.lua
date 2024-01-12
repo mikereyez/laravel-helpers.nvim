@@ -1,21 +1,44 @@
 local M = {}
 
-local wk = require("which-key")
+local KeyBindings = {
+	["<leader>l"] = { name = "Laravel helper functions" },
+	["<leader>la"] = { name = "[A]dd" },
+	["<leader>lac"] = { "<cmd>LaravelCreateClass<cr>", "Add [C]lass" },
+	["<leader>lae"] = { "<cmd>LaravelCreateEnum<cr>", "Add [E]num" },
+	["<leader>lai"] = { "<cmd>LaravelCreateInterface<cr>", "Add [I]nterface" },
+	["<leader>lam"] = { "<cmd>LaravelCreateModel<cr>", "Add [M]odel" },
+	["<leader>li"] = { name = "[I]nsert" },
+	["<leader>lic"] = { "<cmd>LaravelInsertConstruct<cr>", "Insert [C]onstruct" },
+	["<leader>lip"] = { "<cmd>LaravelInsertProperty<cr>", "Insert [P]roperty" },
+}
 
 function M.setup(opts)
 	opts = opts or {}
 
-	wk.register({
-		["<leader>L"] = { name = "Laravel helper functions" },
-		["<leader>La"] = { name = "[A]dd" },
-		["<leader>Lac"] = { "<cmd>LaravelCreateClass<cr>", "Add [C]lass" },
-		["<leader>Lae"] = { "<cmd>LaravelCreateEnum<cr>", "Add [E]num" },
-		["<leader>Lai"] = { "<cmd>LaravelCreateInterface<cr>", "Add [I]nterface" },
-		["<leader>Lam"] = { "<cmd>LaravelCreateModel<cr>", "Add [M]odel" },
-		["<leader>Li"] = { name = "[I]nsert" },
-		["<leader>Lic"] = { "<cmd>LaravelInsertConstruct<cr>", "Insert [C]onstruct" },
-		["<leader>Lip"] = { "<cmd>LaravelInsertProperty<cr>", "Insert [P]roperty" },
-	})
+	local HasWhichKey, WhichKey = pcall(require, "which-key")
+	if HasWhichKey then
+		WhichKey.register(KeyBindings)
+	else
+		SetupDefaultKeyMapping()
+	end
+end
+
+function SetupDefaultKeyMapping()
+	for i, v in pairs(KeyBindings) do
+		local command = v[0]
+
+		if command ~= nil then
+			vim.keymap.set("n", i, v[0], { desc = v[1] })
+		end
+	end
+end
+
+local function requiref(module)
+	require(module)
+end
+
+function IsModuleAvailable(module)
+	return pcall(requiref, module)
 end
 
 vim.api.nvim_create_user_command("LaravelCreateClass", function()
